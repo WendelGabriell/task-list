@@ -73,6 +73,29 @@ body{
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
 }
 
+.task-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    margin-bottom: 6px;
+
+}
+
+.task-item i{
+    background-color: #41b883;
+    padding: 12px;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.task-item svg:hover{
+    cursor: pointer;
+}
+
+.completed{
+    text-decoration: line-through;
+}
 
 /* UTILITIES */
 .error{
