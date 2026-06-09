@@ -14,8 +14,6 @@ const handleAddTask = () => {
   const taskItemContainer = document.createElement("div");
   taskItemContainer.classList.add("task-item");
 
-  tasksContainer.appendChild(taskItemContainer);
-
   const taskContent = document.createElement("p");
   taskContent.innerText = inputElement.value;
 
@@ -32,7 +30,11 @@ const handleAddTask = () => {
   taskItemContainer.appendChild(taskContent);
   taskItemContainer.appendChild(deleteItem);
 
+  tasksContainer.appendChild(taskItemContainer);
+
   inputElement.value = "";
+
+  updateLocalStorage();
 };
 
 const handleClick = (taskContent) => {
@@ -45,6 +47,8 @@ const handleClick = (taskContent) => {
       task.firstChild.classList.toggle("completed");
     }
   }
+
+  updateLocalStorage();
 };
 
 const handleDeleteClick = (taskItemContainer, taskContent) => {
@@ -57,6 +61,8 @@ const handleDeleteClick = (taskItemContainer, taskContent) => {
       taskItemContainer.remove();
     }
   }
+
+  updateLocalStorage();
 };
 const handleAddTaskChange = () => {
   const inputIsValid = validateInput();
@@ -65,6 +71,54 @@ const handleAddTaskChange = () => {
     return inputElement.classList.remove("error");
   }
 };
+
+const updateLocalStorage = () => {
+  const tasks = tasksContainer.childNodes;
+
+  const localStorageTasks = [...tasks].map((item) => {
+    const content = item.firstChild;
+    const isCompleted = item.firstChild.classList.contains("completed");
+
+    return { description: content.innerText, isCompleted };
+  });
+
+  localStorage.setItem("tasks", JSON.stringify(localStorageTasks));
+};
+
+const refreshTasksUsingLocalStorage = () => {
+  const tasksFromLocalStorage = JSON.parse(localStorage.getItem("tasks"));
+
+  if (!tasksFromLocalStorage) return;
+
+  for (const task of tasksFromLocalStorage) {
+    const taskItemContainer = document.createElement("div");
+    taskItemContainer.classList.add("task-item");
+
+    const taskContent = document.createElement("p");
+    taskContent.innerText = task.description;
+
+    if (task.isCompleted) {
+      taskContent.classList.add("completed");
+    }
+
+    taskContent.addEventListener("click", () => handleClick(taskContent));
+
+    const deleteItem = document.createElement("i");
+    deleteItem.classList.add("fa-regular");
+    deleteItem.classList.add("fa-trash-can");
+
+    deleteItem.addEventListener("click", () =>
+      handleDeleteClick(taskItemContainer, taskContent),
+    );
+
+    taskItemContainer.appendChild(taskContent);
+    taskItemContainer.appendChild(deleteItem);
+
+    tasksContainer.appendChild(taskItemContainer);
+  }
+};
+
+refreshTasksUsingLocalStorage();
 
 addTaskButton.addEventListener("click", () => handleAddTask());
 
